@@ -472,7 +472,10 @@ async function saveLead(topicFields){
 
       // ----- NEW: WhatsApp link handling -----
       try {
-        const message = `Hi Projectory — I selected: ${payload.selected_topic_title || payload.area_of_interest}. My mobile: ${payload.mobile}`;
+       const message = `Hi Projectory — I selected: ${payload.selected_topic_title || payload.area_of_interest}.
+My mobile: ${payload.mobile}
+College: ${payload.college}`;
+
         const text = encodeURIComponent(message);
         const waNumber = WHATSAPP_COUNTRY_CODE + WHATSAPP_NUMBER;
         const waLink = `https://wa.me/${waNumber}?text=${text}`;
