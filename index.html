@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Projectile — Topics & Projects</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Embedded minimal styles so modal/toasts are visible during debugging -->
+<style>
+  :root{--bg:#f4f6f9;--card:#ffffff;--muted:#6b7280;--accent:#5a6bff;--accent-2:#3f51ff;--maxw:920px}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#0b1220}
+  .wrap{max-width:var(--maxw);margin:18px auto;padding:18px}
+  .appbar{display:flex;align-items:center;gap:12px;background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(12,20,40,0.05)}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#8fa7ff,#5a6bff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px}
+  .muted{color:var(--muted);font-size:14px}
+  .card{background:var(--card);padding:18px;margin-top:18px;border-radius:14px;box-shadow:0 10px 30px rgba(12,20,40,0.04)}
+  label{display:block;font-weight:600;margin-top:10px;font-size:13px}
+  input,select,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6eef8;font-size:15px;margin-top:6px;box-sizing:border-box;background:#fff}
+  .btn{background:var(--accent);color:#fff;border:none;padding:12px;border-radius:10px;cursor:pointer;font-weight:700}
+  .btn.ghost{background:#fff;color:#243142;border:1px solid #e6eef8}
+  .row{display:flex;gap:10px}
+  .cols2 .col{flex:1}
+  .topics{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:10px}
+  .topic{background:#fff;padding:18px;border-radius:12px;border:1px solid #eef3fb;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}
+  .topic h4{margin:0 0 8px 0;font-size:15px}
+  .topic .info{margin:0;color:var(--muted);font-size:13px}
+  .meta.small{margin-top:6px;color:var(--muted);font-size:13px}
+  .row-btns{display:flex;gap:10px;margin-top:12px}
+  .btn-sm{padding:10px 14px;border-radius:10px;font-weight:700}
+  .ghost{background:#fff;border:1px solid #eef3fb}
+  .center{text-align:center}
+  .small{font-size:13px;color:var(--muted)}
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,12,20,0.45);z-index:9999}
+  .modal-backdrop.show{display:flex}
+  .modal{background:#fff;padding:18px;border-radius:12px;min-width:300px;max-width:720px;box-shadow:0 20px 60px rgba(8,12,30,0.4)}
+  /* toast */
+  .toast-wrap{position:fixed;right:18px;bottom:18px;z-index:10001;display:flex;flex-direction:column;gap:8px}
+  .toast{background:#222;color:#fff;padding:10px 14px;border-radius:8px;opacity:1;transition:opacity .3s}
+  .toast.success{background:#16a34a}
+  .toast.error{background:#dc2626}
+  /* responsive */
+  @media(max-width:800px){ .topics{grid-template-columns:1fr} .wrap{padding:12px} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- App header -->
+    <div class="header-row">
+      <div class="appbar">
+        <div class="brand">
+          <div class="logo">P</div>
+          <div>
+            <h1 style="margin:0">Projectile</h1>
+            <p class="muted" style="margin:2px 0 0 0">Project help — topic → full project → viva</p>
+          </div>
+        </div>
+
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+          <div id="notifPill" class="muted" style="background:#fff;padding:6px 10px;border-radius:12px">0 Notifications</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pages container (single page app) -->
+    <main id="main">
+
+      <!-- HOME PAGE -->
+      <section id="page-home" class="card" style="display:block">
+        <div style="text-align:center;margin-bottom:12px">
+         <img src="logo.jpg" alt="Projectile logo" class="home-logo" style="max-width:140px">
+        </div>
+
+        <h2 style="margin:0 0 6px 0">Welcome to Projectile</h2>
+        <p class="muted">We help UG & PG students pick project topics and deliver complete project documentation.</p>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:0 0 6px 0">Latest notifications</h3>
+          <div id="notifications" class="card" style="padding:12px;margin-top:8px;border-radius:12px">
+            <p class="muted">No notifications yet. (You can add notices from the admin sheet later.)</p>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="center">
+          <button class="btn" onclick="goto('entry')">Get started — Enter details</button>
+        </div>
+      </section>
+
+      <!-- ENTRY PAGE -->
+      <section id="page-entry" class="card" style="display:none">
+        <h3 style="margin:0">Enter your details</h3>
+        <p class="muted">We will only use your mobile to contact you. No spam.</p>
+
+        <label>Mobile number</label>
+        <input id="mobile" placeholder="10-digit mobile (e.g. 9876543210)" inputmode="numeric" />
+
+        <label>College name</label>
+        <input id="college" placeholder="Your college name" />
+
+        <div class="row cols2">
+          <div class="col">
+            <label>Your name</label>
+            <input id="name" placeholder="Student name" />
+          </div>
+          <div class="col">
+            <label>Email (optional)</label>
+            <input id="email" placeholder="you@example.com" inputmode="email" />
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px">
+          <button class="btn" id="toCourseBtn">Choose course</button>
+          <button class="btn ghost" style="background:#fff;color:#243142" onclick="goto('home')">Cancel</button>
+        </div>
+      </section>
+
+      <!-- COURSE SELECTION -->
+      <section id="page-courses" class="card" style="display:none">
+        <h3 style="margin:0">Select your course</h3>
+        <p class="muted">Pick one course to see topics</p>
+
+        <label>Course</label>
+        <select id="courseSelect"><option>Loading courses...</option></select>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" id="seeTopicsBtn">See topics</button>
+          <button class="btn ghost" style="background:#fff;color:#243142" onclick="goto('entry')">Back</button>
+        </div>
+      </section>
+
+      <!-- TOPICS -->
+      <section id="page-topics" class="card" style="display:none">
+        <h3 style="margin:0">Available topics</h3>
+        <p class="muted" id="selCourse">Course: -</p>
+
+        <div id="loader" class="small muted" style="display:none"><span class="loader"></span> Loading topics…</div>
+        <div id="topicsWrap" class="topics" style="margin-top:12px"></div>
+
+        <p id="noTopics" class="small muted" style="display:none">No topics found for this course.</p>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" id="requestCustom">Request custom topic</button>
+          <button class="btn ghost" style="background:#fff;color:#243142" onclick="goto('courses')">Back</button>
+        </div>
+      </section>
+
+      <!-- DONE -->
+      <section id="page-done" class="card" style="display:none">
+        <h3>Thanks — request received</h3>
+        <p class="muted">Our team will contact you on the mobile you provided.</p>
+        <p id="doneChoice" style="font-weight:700;margin-top:8px"></p>
+        <div style="margin-top:12px">
+          <button class="btn" onclick="goto('home')">Return home</button>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- modal for confirm -->
+  <div id="modalBackdrop" class="modal-backdrop" style="display:none">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Confirm selection</h3>
+      <p id="modalText" class="muted">Are you sure?</p>
+      <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end">
+        <button class="btn ghost" id="modalCancel">Cancel</button>
+        <button class="btn" id="modalOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- toasts -->
+  <div class="toast-wrap" id="toasts" aria-live="polite"></div>
+
+<script>
+/* ====== CONFIG - replace if needed ====== */
+const API_BASE = 'https://script.google.com/macros/s/AKfycbyu2KMl7vtHewogPk7jmyUb3lE0NtP2abXSfqpHaExdZ37KhT6MiQ9mTZsjFFuLdWT1/exec';
+const WRITE_TOKEN = 'Projectile_55310';
+/* ======================================== */
+
+const $ = id => document.getElementById(id);
+let currentCourse = '';
+let pendingSelection = null;
+let currentTopics = []; // store last loaded topics for delegation
+
+// small helpers
+function toast(text, type='info'){
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type==='success' ? 'success' : (type==='error' ? 'error' : ''));
+  t.textContent = text;
+  $('toasts').appendChild(t);
+  setTimeout(()=> { t.style.opacity = '0'; t.addEventListener('transitionend', ()=> t.remove()); }, 2800);
+}
+
+// modal attach/detach helpers
+let _modalOkHandler = null;
+function showModal(title, text, onOk){
+  console.log('showModal:', title);
+  $('modalTitle').textContent = title;
+  $('modalText').textContent = text;
+  $('modalBackdrop').style.display = 'flex';
+  setTimeout(()=> $('modalBackdrop').classList.add('show'), 10);
+
+  // remove old handler if present
+  if(_modalOkHandler) {
+    $('modalOk').removeEventListener('click', _modalOkHandler);
+    _modalOkHandler = null;
+  }
+  const ok = ()=> { hideModal(); onOk && onOk(); };
+  _modalOkHandler = ok;
+  $('modalOk').addEventListener('click', ok);
+
+  // replace cancel button (clean attach)
+  const oldCancel = $('modalCancel');
+  const newCancel = oldCancel.cloneNode(true);
+  oldCancel.parentNode.replaceChild(newCancel, oldCancel);
+  newCancel.addEventListener('click', hideModal);
+}
+function hideModal(){
+  $('modalBackdrop').classList.remove('show');
+  setTimeout(()=> $('modalBackdrop').style.display = 'none', 210);
+}
+
+// navigation
+function goto(page){
+  ['home','entry','courses','topics','done'].forEach(p => {
+    const el = $('page-'+p);
+    if(el) el.style.display = (p===page ? 'block' : 'none');
+  });
+  if(page === 'courses') loadCourses();
+  if(page === 'topics') {
+    if(currentCourse) loadTopics(currentCourse);
+    else goto('courses');
+  }
+}
+
+// --- API helpers
+async function apiGet(params){
+  const url = API_BASE + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  return res.json();
+}
+
+// POST: form-encoded body (Apps Script friendly)
+async function apiPost(payload){
+  const body = new URLSearchParams();
+  for (const k in payload) {
+    if (payload.hasOwnProperty(k)) body.append(k, payload[k] == null ? '' : payload[k]);
+  }
+  const res = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); } catch (e) { return { success: false, error: 'Invalid JSON response from server', raw: text }; }
+}
+
+// validation
+function validMobile(v){ return /^[6-9]\d{9}$/.test(v.trim()); }
+
+// --- load courses
+async function loadCourses(){
+  const sel = $('courseSelect');
+  sel.innerHTML = '<option>Loading...</option>';
+  try {
+    const r = await apiGet({ action: 'getCourses' });
+    if(r.success && r.data && r.data.length){
+      sel.innerHTML = '<option value="">Select course</option>';
+      r.data.forEach(c => {
+        const opt = document.createElement('option'); opt.value=c; opt.textContent=c;
+        sel.appendChild(opt);
+      });
+    } else {
+      sel.innerHTML = '<option value="">No courses</option>';
+    }
+  } catch(err){
+    sel.innerHTML = '<option value="">Error loading</option>';
+    console.error(err);
+    toast('Error loading courses', 'error');
+  }
+}
+
+// --- load topics for course (renders buttons with data-index)
+async function loadTopics(course){
+  console.log('loadTopics(', course, ')');
+  currentCourse = course;
+  $('selCourse').textContent = 'Course: ' + course;
+  $('topicsWrap').innerHTML = '';
+  $('noTopics').style.display = 'none';
+  $('loader').style.display = 'inline-block';
+  try {
+    const r = await apiGet({ action: 'getTopics', course: course });
+    $('loader').style.display = 'none';
+    if(r.success && r.data && r.data.length){
+      currentTopics = r.data || [];
+      console.log('topics loaded:', currentTopics.length);
+      currentTopics.forEach((t, idx) => {
+        const div = document.createElement('div'); div.className='topic';
+        const title = t.title || t.topic || '(no title)';
+        const brief = (t.brief || t.description || '').slice(0,220);
+        div.innerHTML = `
+          <div>
+            <h4>${escapeHtml(title)}</h4>
+            <p class="info">${escapeHtml(brief.slice(0,120))}${brief.length>120 ? '…' : ''}</p>
+            <div class="meta small">Method: ${escapeHtml(t.method || '')}</div>
+          </div>
+        `;
+        // row buttons
+        const row = document.createElement('div'); row.className='row-btns';
+        const btn = document.createElement('button'); btn.className='btn btn-sm btn-select'; btn.textContent='Select';
+        btn.setAttribute('data-index', String(idx));
+        const info = document.createElement('button'); info.className='btn btn-sm ghost btn-more'; info.textContent='More';
+        info.setAttribute('data-index', String(idx));
+        row.appendChild(btn); row.appendChild(info);
+        div.appendChild(row);
+        $('topicsWrap').appendChild(div);
+      });
+    } else {
+      currentTopics = [];
+      $('noTopics').style.display = 'block';
+      console.log('no topics returned by API');
+    }
+  } catch(err){
+    currentTopics = [];
+    $('loader').style.display = 'none';
+    $('noTopics').style.display = 'block';
+    console.error(err);
+    toast('Error loading topics', 'error');
+  }
+}
+
+// delegated handler for topics container (Select + More)
+function topicsDelegatedHandler(ev){
+  // SELECT
+  const selBtn = ev.target.closest('.btn-select');
+  if(selBtn && $('topicsWrap').contains(selBtn)){
+    const idx = Number(selBtn.dataset.index);
+    console.log('click: select idx', idx);
+    const topic = currentTopics[idx];
+    if(!topic) { toast('Topic not found', 'error'); return; }
+
+    // Ensure student details present before saving a lead:
+    if(!validMobile(($('mobile') && $('mobile').value) || '')){
+      toast('Please enter mobile number and college first', 'error');
+      goto('entry');
+      return;
+    }
+    if(!($('college') && $('college').value.trim())){
+      toast('Please enter mobile number and college first', 'error');
+      goto('entry');
+      return;
+    }
+
+    pendingSelection = topic;
+    showModal('confirm this topic?', topic.title || topic.topic || '(no title)', async ()=> {
+      console.log('modal confirmed for idx', idx);
+      await selectTopic(topic);
+    });
+    return;
+  }
+
+  // MORE (toggle)
+  const moreBtn = ev.target.closest('.btn-more');
+  if(moreBtn && $('topicsWrap').contains(moreBtn)){
+    const idx = Number(moreBtn.dataset.index);
+    const topic = currentTopics[idx];
+    if(!topic) { return; }
+    const topicEl = moreBtn.closest('.topic');
+    const expanded = topicEl.getAttribute('data-expanded') === '1';
+    if(!expanded){
+      const full = document.createElement('p'); full.className='info'; full.style.marginTop='10px';
+      full.setAttribute('data-full','1');
+      full.textContent = (topic.brief || topic.description || '').slice(0,400);
+      topicEl.appendChild(full);
+      topicEl.setAttribute('data-expanded','1');
+      moreBtn.textContent = 'Less';
+    } else {
+      const f = topicEl.querySelector('[data-full]');
+      if(f) f.remove();
+      topicEl.setAttribute('data-expanded','0');
+      moreBtn.textContent = 'More';
+    }
+    return;
+  }
+}
+
+// --- selecting a topic
+async function selectTopic(topic){
+  console.log('selectTopic called for', topic);
+  const payloadFields = {
+    selected_topic_id: topic.id || topic.topicid || '',
+    selected_topic_title: topic.title || topic.topic || ''
+  };
+  await saveLead(payloadFields);
+}
+
+// --- request custom topic
+async function requestCustomTopic(){
+  const area = prompt('Enter a short area of interest (e.g. digital marketing, supply chain):');
+  if(!area || !area.trim()) return;
+  await saveLead({ selected_topic_id:'', selected_topic_title:'', area_of_interest: area.trim() });
+}
+
+// --- save lead (POST)
+async function saveLead(topicFields){
+  const mobileEl = $('mobile');
+  const mobile = mobileEl ? mobileEl.value.trim() : '';
+  const college = $('college').value.trim();
+
+  // validation
+  if(!validMobile(mobile)){
+    alert('Please enter a valid 10-digit mobile number');
+    goto('entry');
+    return;
+  }
+  if(!college){
+    alert('Please enter your college name');
+    goto('entry');
+    return;
+  }
+
+  const payload = {
+    writeToken: WRITE_TOKEN,
+    mobile: mobile,
+    college: college,
+    name: $('name').value.trim(),
+    email: $('email').value.trim(),
+    course: currentCourse || $('courseSelect').value || '',
+    area_of_interest: topicFields.area_of_interest || '',
+    selected_topic_id: topicFields.selected_topic_id || '',
+    selected_topic_title: topicFields.selected_topic_title || '',
+    userAgent: navigator.userAgent,
+    notes: ''
+  };
+
+  console.log('Submitting lead payload', payload);
+
+  // disable only modal confirm to prevent double click
+  const modalConfirm = $('modalOk');
+  try {
+    if(modalConfirm) modalConfirm.disabled = true;
+
+    const r = await apiPost(payload);
+
+    console.log('Server response:', r);
+
+    if(modalConfirm) modalConfirm.disabled = false;
+
+    if(r && r.success){
+      $('doneChoice').textContent =
+        payload.selected_topic_title ||
+        payload.area_of_interest ||
+        'Requested topic';
+      toast('Saved — our team will contact the student', 'success');
+      goto('done');
+    } else {
+      const errMsg = r && r.error ? r.error : (r && r.raw ? r.raw : 'unknown');
+      toast('Failed to save: ' + errMsg, 'error');
+      alert('Failed to save: ' + errMsg);
+      console.error('Save failed:', r);
+    }
+
+  } catch(err){
+    if(modalConfirm) modalConfirm.disabled = false;
+    toast('Error saving lead. See console.', 'error');
+    console.error(err);
+    alert('Error saving lead. See console.');
+  }
+}
+
+// Utility: escape HTML
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// Event wiring
+document.addEventListener('DOMContentLoaded', ()=>{
+  // toCourse button
+  const toCourseBtn = $('toCourseBtn');
+  if(toCourseBtn){
+    toCourseBtn.addEventListener('click', ()=> {
+      const mobile = $('mobile').value.trim(), college = $('college').value.trim();
+      if(!validMobile(mobile)){ alert('Enter valid 10-digit mobile'); return; }
+      if(!college){ alert('Enter college name'); return; }
+      goto('courses');
+    });
+  }
+
+  // see topics button
+  const seeTopicsBtn = $('seeTopicsBtn');
+  if(seeTopicsBtn){
+    seeTopicsBtn.addEventListener('click', ()=> {
+      const sel = $('courseSelect').value;
+      if(!sel){ alert('Select a course'); return; }
+      currentCourse = sel;
+      goto('topics');
+    });
+  }
+
+  // request custom
+  const reqBtn = $('requestCustom');
+  if(reqBtn) reqBtn.addEventListener('click', requestCustomTopic);
+
+  // delegated click on topicsWrap
+  const topicsWrap = $('topicsWrap');
+  if(topicsWrap) topicsWrap.addEventListener('click', topicsDelegatedHandler);
+
+  // show home on load
+  goto('home');
+});
+</script>
+</body>
+</html>
