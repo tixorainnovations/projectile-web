@@ -154,8 +154,15 @@
         <h3>Thanks — request received</h3>
         <p class="muted">Our team will contact you on the mobile you provided.</p>
         <p id="doneChoice" style="font-weight:700;margin-top:8px"></p>
-        <div style="margin-top:12px">
+        <div style="margin-top:12px; display:flex; gap:12px; align-items:center;">
           <button class="btn" onclick="goto('home')">Return home</button>
+
+          <!-- WHATSAPP BUTTON: hidden by default; will be shown after successful save -->
+          <a id="whatsappBtn" href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none">
+            <button class="btn" style="background:#25D366;border:none;color:#fff;padding:10px 16px;border-radius:10px; font-weight:700">
+              Chat on WhatsApp
+            </button>
+          </a>
         </div>
       </section>
 
@@ -182,6 +189,10 @@
 /* ====== CONFIG - replace if needed ====== */
 const API_BASE = 'https://script.google.com/macros/s/AKfycbyu2KMl7vtHewogPk7jmyUb3lE0NtP2abXSfqpHaExdZ37KhT6MiQ9mTZsjFFuLdWT1/exec';
 const WRITE_TOKEN = 'Projectile_55310';
+
+/* WHATSAPP CONFIG */
+const WHATSAPP_COUNTRY_CODE = '91';    // e.g. 91 for India
+const WHATSAPP_NUMBER = '9496055310';  // your Projectory business number (no + or spaces)
 /* ======================================== */
 
 const $ = id => document.getElementById(id);
@@ -458,6 +469,23 @@ async function saveLead(topicFields){
         payload.selected_topic_title ||
         payload.area_of_interest ||
         'Requested topic';
+
+      // ----- NEW: WhatsApp link handling -----
+      try {
+        const message = `Hi Projectory — I selected: ${payload.selected_topic_title || payload.area_of_interest}. My mobile: ${payload.mobile}`;
+        const text = encodeURIComponent(message);
+        const waNumber = WHATSAPP_COUNTRY_CODE + WHATSAPP_NUMBER;
+        const waLink = `https://wa.me/${waNumber}?text=${text}`;
+        const waElem = $('whatsappBtn');
+        if(waElem){
+          waElem.href = waLink;
+          waElem.style.display = 'inline-block';
+        }
+      } catch(e){
+        console.error('Failed to build WhatsApp link', e);
+      }
+      // --------------------------------------
+
       toast('Saved — our team will contact the student', 'success');
       goto('done');
     } else {
