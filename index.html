@@ -419,7 +419,52 @@ async function requestCustomTopic(){
   await saveLead({ selected_topic_id:'', selected_topic_title:'', area_of_interest: area.trim() });
 }
 
-// --- save lead (POST)
+/* --- NEW: save initial lead once phone+college+course are set (even if no topic) --- */
+async function saveInitialLead() {
+  const mobileEl = $('mobile');
+  const collegeEl = $('college');
+  const courseSel = $('courseSelect');
+
+  if (!mobileEl || !collegeEl || !courseSel) return;
+
+  const mobile = mobileEl.value.trim();
+  const college = collegeEl.value.trim();
+  const course = courseSel.value || currentCourse || '';
+
+  // Only save if we have basic details + course
+  if (!validMobile(mobile) || !college || !course) {
+    console.log('Initial lead not saved: missing/invalid mobile, college, or course');
+    return;
+  }
+
+  const payload = {
+    writeToken: WRITE_TOKEN,
+    mobile: mobile,
+    college: college,
+    name: $('name').value.trim(),
+    email: $('email').value.trim(),
+    course: course,
+    area_of_interest: '',
+    selected_topic_id: '',
+    selected_topic_title: '',
+    userAgent: navigator.userAgent,
+    notes: 'Initial lead — course selected, topic not yet chosen'
+  };
+
+  console.log('Submitting initial lead payload', payload);
+
+  try {
+    const r = await apiPost(payload);
+    console.log('Initial lead response:', r);
+    if (!r || !r.success) {
+      console.warn('Initial lead save failed:', r);
+    }
+  } catch (err) {
+    console.error('Error saving initial lead:', err);
+  }
+}
+
+/* --- save lead when a topic OR custom request is made --- */
 async function saveLead(topicFields){
   const mobileEl = $('mobile');
   const mobile = mobileEl ? mobileEl.value.trim() : '';
@@ -470,12 +515,11 @@ async function saveLead(topicFields){
         payload.area_of_interest ||
         'Requested topic';
 
-      // ----- NEW: WhatsApp link handling -----
+      // ----- WhatsApp link handling -----
       try {
-       const message = `Hi Projectory — I selected: ${payload.selected_topic_title || payload.area_of_interest}.
+        const message = `Hi Projectory — I selected: ${payload.selected_topic_title || payload.area_of_interest}.
 My mobile: ${payload.mobile}
 College: ${payload.college}`;
-
         const text = encodeURIComponent(message);
         const waNumber = WHATSAPP_COUNTRY_CODE + WHATSAPP_NUMBER;
         const waLink = `https://wa.me/${waNumber}?text=${text}`;
@@ -487,7 +531,7 @@ College: ${payload.college}`;
       } catch(e){
         console.error('Failed to build WhatsApp link', e);
       }
-      // --------------------------------------
+      // ----------------------------------
 
       toast('Saved — our team will contact the student', 'success');
       goto('done');
@@ -525,10 +569,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // see topics button
   const seeTopicsBtn = $('seeTopicsBtn');
   if(seeTopicsBtn){
-    seeTopicsBtn.addEventListener('click', ()=> {
+    seeTopicsBtn.addEventListener('click', async ()=> {
       const sel = $('courseSelect').value;
       if(!sel){ alert('Select a course'); return; }
       currentCourse = sel;
+
+      // 🔹 Save to Google Sheet even if student never selects a topic
+      await saveInitialLead();
+
       goto('topics');
     });
   }
