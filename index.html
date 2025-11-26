@@ -484,7 +484,7 @@ function topicsDelegatedHandler(ev){
     }
 
     const title = topic.title || topic.topic || '(no title)';
-    const msg = `Selected this topic '${title}' & I need the full project for this.\nName: ${name}\nMobile: ${mobile}\nCollege: ${college}\nCourse: ${course}`;
+    const msg = `I am interested in this topic: '${title}' & I want to know the full project details. Please guide me.\nName: ${name}\nMobile: ${mobile}\nCollege: ${college}\nCourse: ${course}`;
     const text = encodeURIComponent(msg);
     const waNumber = WHATSAPP_COUNTRY_CODE + WHATSAPP_NUMBER;
     const waLink = `https://wa.me/${waNumber}?text=${text}`;
