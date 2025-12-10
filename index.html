@@ -40,24 +40,74 @@
 
     <!-- HOME PAGE -->
     <section id="page-home" class="card" style="display:block">
-      <div style="text-align:center;margin-bottom:12px">
+
+  <div class="home-hero">
+    <!-- LEFT: Logo + text + buttons -->
+    <div class="home-hero-left">
+      <div class="home-logo-wrap">
         <img src="logo.jpg" alt="Projectory logo" class="home-logo">
-      </div>
-
-      <h2>Welcome to Projectory</h2>
-      <p class="muted">We help UG & PG students pick project topics and deliver complete project documentation.</p>
-
-      <div style="margin-top:12px">
-        <h3>Latest notifications</h3>
-        <div id="notifications" class="card" style="padding:12px;margin-top:8px;border-radius:12px">
-          <p class="muted">No notifications yet. (You can add notices later.)</p>
+        <div class="home-brand-text">
+          <span class="home-tag">UG / PG Project Helper</span>
+          <h2 class="home-title">Find your perfect project topic in minutes.</h2>
         </div>
       </div>
 
-      <div style="margin-top:14px" class="center">
-        <button class="btn" onclick="goto('entry')">Get started — Enter details</button>
+      <p class="home-subtitle">
+        Projectory helps BCom, BBA, MBA, Sociology and other degree students
+        pick a simple, practical and unique topic – and supports you till final submission.
+      </p>
+
+      <ul class="home-points">
+        <li>🎯 Course + location based project topics</li>
+        <li>📊 Easy-to-collect data, real-life problems</li>
+        <li>📚 Support for report, analysis & viva prep</li>
+      </ul>
+
+      <div style="margin-top:20px; text-align:center;">
+    <button class="btn" onclick="goto('entry')">Start – Enter your details</button>
+</div>
+
+
+      <p class="home-mini-note">
+        No login. Just share your basic details, choose a topic and our team will contact you on WhatsApp.
+      </p>
+    </div>
+
+    <!-- RIGHT: Steps / small highlight cards -->
+    <div class="home-hero-right">
+      <div class="home-step-card">
+        <h3>How Projectory works</h3>
+        <ol>
+          <li><strong>Enter</strong> your mobile, college & course</li>
+          <li><strong>Browse</strong> topics by course / college / location</li>
+          <li><strong>Select</strong> a topic & talk to us on WhatsApp</li>
+          <li><strong>Get help</strong> for full project & viva</li>
+        </ol>
       </div>
-    </section>
+
+      <div class="home-highlight-card">
+        <p class="badge">For Kerala students</p>
+        <p class="text-main">
+          Topics are designed for <strong>local data collection</strong> and
+          <strong>low plagiarism risk</strong>.
+        </p>
+        <p class="text-small">
+          Ideal for BCom, BBA, MBA, BA, BSc, MA, MSc and more.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications block (kept, but styled nicer) -->
+  <div class="home-notifications">
+    <h3 class="home-notify-title">Latest updates</h3>
+    <div id="notifications" class="card home-notify-card">
+      <p class="muted">No notifications yet. (You can add notices later.)</p>
+    </div>
+  </div>
+
+</section>
+
 
     <!-- ENTRY PAGE -->
     <section id="page-entry" class="card" style="display:none">
